@@ -309,10 +309,10 @@
           let noise_tensor = tf.tensor4d(noise.tolist())
           noise_tensor.print(true)
 
-          await new Promise(resolve => setTimeout(resolve, 1000));
           // Generate images
           console.log('generating images')
           this.status = "creating shoes"
+          await new Promise(resolve => setTimeout(resolve, 1000));
           let generated_images = this.model.predict(noise_tensor)
 
           let output_data = await generated_images.dataSync()
