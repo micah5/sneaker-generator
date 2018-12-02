@@ -1,0 +1,17 @@
+{
+  "name": "sneaker-generator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "predict.js",
+  "scripts": {
+    "test": "node predict.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@tensorflow/tfjs-node": "^0.1.21",
+    "array-to-image": "^1.0.0",
+    "save-pixels": "^2.3.4",
+    "zeros": "^1.0.0"
+  }
+}
