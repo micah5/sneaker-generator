@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons' rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+  <style>
+    #app {
+      background-color: #ffffff;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+    h1 {
+      font-size: 60px;
+      line-height: 55px;
+    }
+    .bar {
+      position: absolute;
+      height: 5px;
+      width: 100%;
+      bottom: 0;
+      z-index: 1;
+    }
+    .rainbow {
+      background: linear-gradient(270deg, #ff0000, #f9ff00, #00ff20, #00fdff, #0011ff, #dc00ff);
+      background-size: 1200% 1200%;
+
+      -webkit-animation: AnimationName 26s ease infinite;
+      -moz-animation: AnimationName 26s ease infinite;
+      animation: AnimationName 26s ease infinite;
+    }
+
+    @-webkit-keyframes AnimationName {
+        0%{background-position:0% 50%}
+        50%{background-position:100% 50%}
+        100%{background-position:0% 50%}
+    }
+    @-moz-keyframes AnimationName {
+        0%{background-position:0% 50%}
+        50%{background-position:100% 50%}
+        100%{background-position:0% 50%}
+    }
+    @keyframes AnimationName {
+        0%{background-position:0% 50%}
+        50%{background-position:100% 50%}
+        100%{background-position:0% 50%}
+    }
+    .custom-loader {
+      animation: loader 1s infinite;
+      display: flex;
+    }
+    @-moz-keyframes loader {
+      from {
+        transform: rotate(0);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+    @-webkit-keyframes loader {
+      from {
+        transform: rotate(0);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+    @-o-keyframes loader {
+      from {
+        transform: rotate(0);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+    @keyframes loader {
+      from {
+        transform: rotate(0);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <v-app>
+      <v-content>
+        <v-container>
+          <h1 style="position: relative">
+            <div class="rainbow bar"></div>
+            <div style="position: relative; z-index: 2">“Sneaker Generator”<div>
+          </h1>
+          <template grid-list-sm fluid>
+            <v-layout row wrap>
+              <v-flex
+                v-for="n in random12"
+                :key="n"
+                xs3 sm2 lg1
+                d-flex
+              >
+                <v-card flat tile class="d-flex">
+                  <v-img
+                    :src="`github-pages/img/shoe${n + 1}.png`"
+                    aspect-ratio="1"
+                    class="grey lighten-2"
+                  >
+                    <v-layout
+                      slot="placeholder"
+                      fill-height
+                      align-center
+                      justify-center
+                      ma-0
+                    >
+                      <v-progress-circular indeterminate color="grey lighten-5"></v-progress-circular>
+                    </v-layout>
+                  </v-img>
+                </v-card>
+              </v-flex>
+            </v-layout>
+          </template>
+          <h2>Neural Network that makes shoes. Pointless, but kinda fun.</h2>
+          <h2 class="mt-4">Try it on your machine</h2>
+          <p>You'll need some things installed, but you can run it either with <a href="">Node.js</a> or <a href="">Python</a>.</p>
+          <h2>Try it in the browser</h2>
+          <p class="mb-0"><b>Due to a limitation with Tensorflow.js in the browser, model prediction can only happen on the CPU.</b></p>
+          <p class="mb-0">Therefore, depending on the speed of your CPU, it can be pretty slow. On my 1,6 GHz i5 it takes ~10 mins.
+            <br>On the upside, one iteration produces 64 shoes.
+          </p>
+          <v-layout row wrap class="mt-3">
+            <v-flex xs12 sm6>
+              <div class="rainbow" style="position: relative; width: 266px; height: 266px; display: block; margin-left: auto; margin-right: auto;">
+                <canvas id="myCanvas" width="256" height="256" style="position: absolute; width: 256px; height: 256px; background-color: white; left: 5px; top: 5px;"></canvas>
+              </div>
+            </v-flex>
+            <v-flex xs12 sm6>
+              <v-layout column fill-height>
+                <v-btn
+                  flat
+                  :loading="loading_model"
+                  :disabled="loading_model || model != null"
+                  @click="downloadModel"
+                >
+                  <v-icon left dark>cloud_download</v-icon>fetch model
+                  <span slot="loader" class="custom-loader">
+                    <v-icon light>cached</v-icon>
+                  </span>
+                </v-btn>
+                <v-btn
+                  flat
+                  :loading="loading_predict"
+                  :disabled="model == null"
+                  @click="predict"
+                >
+                  start
+                  <span slot="loader" class="custom-loader">
+                    <v-icon light>cached</v-icon>
+                  </span>
+                </v-btn>
+                <v-dialog
+                  v-model="loading_predict"
+                  hide-overlay
+                  persistent
+                  width="300"
+                >
+                  <v-card
+                    class="rainbow"
+                  >
+                    <v-card-text>
+                      <p>Currently {{status}}...</p>
+                      <b>This tab might freeze!
+                         Don't be alarmed, it's just doing the prediciton.
+                         Go and make some tea ☕️ and let it do it's thing.
+                      </b>
+                      <v-progress-linear
+                        indeterminate
+                        color="black"
+                        class="mb-0"
+                      ></v-progress-linear>
+                    </v-card-text>
+                  </v-card>
+                </v-dialog>
+                <v-spacer></v-spacer>
+                <v-slide-y-transition>
+                  <v-layout row v-show="preds != null">
+                    <v-flex xs6>
+                      <v-btn flat block @click="drawShoe">
+                        <v-icon left dark>arrow_forward</v-icon>next shoe
+                      </v-btn>
+                    </v-flex>
+                    <v-flex xs6>
+                      <v-btn flat block @click="save">
+                        <v-icon left dark>save_alt</v-icon>save
+                      </v-btn>
+                      <a id="download" download="triangle.png"></a>
+                    </v-flex>
+                  </v-layout>
+                </v-slide-y-transition>
+              </v-layout>
+            </v-flex>
+          </v-layout>
+        </v-container>
+      </v-content>
+    </v-app>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@0.13.3/dist/tf.min.js"> </script>
+  <script src="https://cdn.jsdelivr.net/gh/nicolaspanel/numjs@0.15.1/dist/numjs.min.js"></script>
+  <script>
+    new Vue({
+      el: '#app',
+      data: {
+        loading_model: false,
+        loading_predict: false,
+        model: null,
+        status: 'preparing',
+        count: 0,
+        preds: null
+      },
+      mounted: function() {
+        tf.setBackend('cpu')
+      },
+      computed: {
+        random12: function() {
+          let x = Array(12).fill(0).map((e,i)=>i+1)
+          this.shuffle(x)
+          return x
+        }
+      },
+      methods: {
+        shuffle: function(a) {
+          var j, x, i;
+          for (i = a.length - 1; i > 0; i--) {
+              j = Math.floor(Math.random() * (i + 1));
+              x = a[i];
+              a[i] = a[j];
+              a[j] = x;
+          }
+          return a;
+        },
+        downloadModel: async function() {
+          this.loading_model = true;
+          console.log('doing')
+          const model = await tf.loadModel('https://raw.githubusercontent.com/98mprice/sneaker-test/master/src/generator/model.json');
+          console.log('done')
+          this.model = model;
+          this.loading_model = false;
+        },
+        randn_bm: function(min, max, skew) {
+            var u = 0, v = 0;
+            while(u === 0) u = Math.random(); //Converting [0,1) to (0,1)
+            while(v === 0) v = Math.random();
+            let num = Math.sqrt( -2.0 * Math.log( u ) ) * Math.cos( 2.0 * Math.PI * v );
+
+            num = num / 10.0 + 0.5; // Translate to 0 -> 1
+            if (num > 1 || num < 0) num = randn_bm(min, max, skew); // resample between 0 and 1 if out of range
+            num = Math.pow(num, skew); // Skew
+            num *= max - min; // Stretch to fill range
+            num += min; // offset to min
+            return num;
+        },
+        test: function() {
+          this.loading_predict = true
+          this.status = "doing stuff"
+          setTimeout(() => (this.loading_predict = false), 4000)
+        },
+        save: function() {
+          var download = document.getElementById("download");
+		      var image = document.getElementById("myCanvas").toDataURL("image/png").replace("image/png", "image/octet-stream");
+			    download.setAttribute("href", image);
+        },
+        drawShoe: function() {
+          if (this.count >= this.preds.length) {
+            this.count = 0
+          }
+          var c=document.getElementById("myCanvas");
+          var ctx=c.getContext("2d");
+          var imgData=ctx.createImageData(256,256);
+          for (var i = 0; i<imgData.data.length; i += 4) {
+            r = (this.preds[this.count] + 1)*127.5
+            g = (this.preds[this.count+1] + 1)*127.5
+            b = (this.preds[this.count+2] + 1)*127.5
+            imgData.data[i+0]=r;
+            imgData.data[i+1]=b;
+            imgData.data[i+2]=g;
+            imgData.data[i+3]=255;
+            this.count += 3
+          }
+          ctx.putImageData(imgData,0,0);
+        },
+        predict: async function() {
+          this.loading_predict = true
+          console.log('predict')
+
+          const batch_size = 64
+
+          // Generate noise
+          console.log('generating noise')
+          this.status = "generating noise"
+          let noise = nj.zeros([batch_size, 1, 1, 100])
+          for (var i = 0; i < batch_size; i++) {
+            for (var j = 0; j < 100; j++) {
+              noise.set(i, 0, 0, j, this.randn_bm(-5, 5, 1))
+            }
+          }
+
+          let noise_tensor = tf.tensor4d(noise.tolist())
+          noise_tensor.print(true)
+
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          // Generate images
+          console.log('generating images')
+          this.status = "creating shoes"
+          let generated_images = this.model.predict(noise_tensor)
+
+          let output_data = await generated_images.dataSync()
+          this.preds = Array.prototype.slice.call(output_data);
+
+          // Draw image
+          console.log('drawing image')
+          this.status = "drawing first shoe " + (this.preds == null)
+          this.drawShoe()
+
+          this.loading_predict = false
+        }
+      }
+    })
+  </script>
+</body>
+</html>
