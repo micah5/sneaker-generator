@@ -87,11 +87,11 @@
     <v-app>
       <v-content>
         <v-container>
-          <h1 style="position: relative">
+          <h1 style="position: relative" :class="$vuetify.breakpoint.smAndDown ? 'mt-5' : 'mt-0'">
             <div class="rainbow bar"></div>
             <div style="position: relative; z-index: 2">“Sneaker Generator”<div>
           </h1>
-          <a class="pa-3 mr-5" href="https://github.com/98mprice/sneaker-generator" style="position: absolute; top: 0; right: 0;">
+          <a class="pa-3 mr-5" href="https://github.com/98mprice/sneaker-generator" style="position: absolute; top: 0; right: 0; z-index: 5;">
             <h2>fork me! 🍽</h2>
           </a>
           <template grid-list-sm fluid>
