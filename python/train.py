@@ -142,7 +142,7 @@ def save_generated_images(generated_images, epoch, batch_number):
         fig.axes.get_yaxis().set_visible(False)
 
     plt.tight_layout()
-    save_name = '/output/generatedSamples_epoch' + str(
+    save_name = './output/generatedSamples_epoch' + str(
         epoch + 1) + '_batch' + str(batch_number + 1) + '.png'
 
     plt.savefig(save_name, bbox_inches='tight', pad_inches=0)
@@ -163,13 +163,13 @@ def train_dcgan(batch_size, epochs, image_shape, dataset_path):
     gan.add(generator)
     gan.add(discriminator)
 
-    if os.path.exists("/model/generator_weights.h5"):
+    if os.path.exists("/output/generator_weights.h5"):
         print('loaded generator model weights')
-        generator.load_weights('/model/generator_weights.h5')
+        generator.load_weights('/output/generator_weights.h5')
 
-    if os.path.exists("/model/discriminator_weights.h5"):
+    if os.path.exists("/output/discriminator_weights.h5"):
         print('loaded discriminator model weights')
-        discriminator.load_weights('/model/discriminator_weights.h5')
+        discriminator.load_weights('/output/discriminator_weights.h5')
 
     optimizer = Adam(lr=0.001, beta_1=0.5)
     gan.compile(loss='binary_crossentropy', optimizer=optimizer,
@@ -282,21 +282,25 @@ def train_dcgan(batch_size, epochs, image_shape, dataset_path):
         plt.legend()
     plt.pause(0.0000000001)
     plt.show()
-    plt.savefig('/output/trainingLossPlot.png')
+    plt.savefig('./output/trainingLossPlot.png')
 
     discriminator.trainable = True
     save_generated_images(generated_images, epoch, batch_number)
-    generator.save_weights('/output/generator_weights.h5')
-    discriminator.save_weights('/output/discriminator_weights.h5')
+    generator.save_weights('./output/generator_weights.h5')
+    discriminator.save_weights('./output/discriminator_weights.h5')
 
+
+def data_callback(val):
+    print('do something now!')
+    print(val)
 
 def main():
-    dataset_path = '/input/'
+    dataset_path = '../dataset/'
     batch_size = 64
     image_shape = (256, 256, 3)
     epochs = 30
     train_dcgan(batch_size, epochs,
-                image_shape, dataset_path)
+                image_shape, data_callback, dataset_path)
 
 if __name__ == "__main__":
     main()
