@@ -163,13 +163,13 @@ def train_dcgan(batch_size, epochs, image_shape, dataset_path):
     gan.add(generator)
     gan.add(discriminator)
 
-    if os.path.exists("/output/generator_weights.h5"):
+    if os.path.exists("./output/generator_weights.h5"):
         print('loaded generator model weights')
-        generator.load_weights('/output/generator_weights.h5')
+        generator.load_weights('./output/generator_weights.h5')
 
-    if os.path.exists("/output/discriminator_weights.h5"):
+    if os.path.exists("./output/discriminator_weights.h5"):
         print('loaded discriminator model weights')
-        discriminator.load_weights('/output/discriminator_weights.h5')
+        discriminator.load_weights('./output/discriminator_weights.h5')
 
     optimizer = Adam(lr=0.001, beta_1=0.5)
     gan.compile(loss='binary_crossentropy', optimizer=optimizer,
