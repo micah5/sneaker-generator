@@ -290,17 +290,13 @@ def train_dcgan(batch_size, epochs, image_shape, dataset_path):
     discriminator.save_weights('./output/discriminator_weights.h5')
 
 
-def data_callback(val):
-    print('do something now!')
-    print(val)
-
 def main():
     dataset_path = '../dataset/'
     batch_size = 64
     image_shape = (256, 256, 3)
     epochs = 30
     train_dcgan(batch_size, epochs,
-                image_shape, data_callback, dataset_path)
+                image_shape, dataset_path)
 
 if __name__ == "__main__":
     main()
