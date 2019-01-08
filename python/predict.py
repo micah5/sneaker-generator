@@ -66,9 +66,9 @@ def construct_generator():
 def predict():
     generator = construct_generator()
 
-    if os.path.exists("generator_weights.h5"):
+    if os.path.exists("./output/generator_weights.h5"):
         print('loaded generator model weights')
-        generator.load_weights('generator_weights.h5')
+        generator.load_weights('./output/generator_weights.h5')
 
     # Saving model for tensorflow.js
     tfjs.converters.save_keras_model(generator, 'generator')
@@ -77,7 +77,7 @@ def predict():
 
     # Generate noise
     noise = np.random.uniform(size=[batch_size, 1, 1, 100])
-    print noise.shape
+    print(noise.shape)
 
     # Generate images
     generated_images = generator.predict(noise)
@@ -87,6 +87,6 @@ def predict():
         image = generated_images[i, :, :, :]
         image += 1
         image *= 127.5
-        matplotlib.image.imsave('output/shoe%d.png' % i, image.astype(np.uint8))
+        matplotlib.image.imsave('./output/shoe%d.png' % i, image.astype(np.uint8))
 
 predict()
