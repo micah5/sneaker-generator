@@ -1,7 +1,7 @@
 # sneaker-generator
 DCGAN that generates sneakers. Built using keras (with tensorflow backend).
 
-Also, I've now ported across the prediction function to Tensorflow.js, and you can try it out in the browser [here](https://98mprice.github.io/sneaker-generator/), or via Node.js [here](node/predict.js).
+Also, I've now ported across the prediction function to Tensorflow.js, and you can try it out in the browser [here](https://micah5.github.io/sneaker-generator/), or via Node.js [here](node/predict.js).
 
 ![examples](https://i.imgur.com/w4kscBP.png)
 
@@ -29,4 +29,4 @@ npm run test
 
 ### Browser
 Only tested on Chrome. Takes a while, since Tensorflow.js in the browser is limited to CPU only.
-[Try me!](https://98mprice.github.io/sneaker-generator/)
+[Try me!](https://micah5.github.io/sneaker-generator/)
